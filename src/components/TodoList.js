@@ -1,8 +1,22 @@
 import React, { useContext } from "react";
 import TodosContext from "../context";
+import axios from "axios";
+import { API_ENDPOINT } from "../config";
 
 export default function TodoList() {
   const { state, dispatch } = useContext(TodosContext);
+
+  const deleteTodo = async todo => {
+    await axios.delete(`${API_ENDPOINT}/${todo.id}`);
+    dispatch({ type: "DELETE_TODO", payload: todo });
+  };
+
+  const toggleTodo = async todo => {
+    const response = await axios.patch(`${API_ENDPOINT}/${todo.id}`, {
+      completed: !todo.completed
+    });
+    dispatch({ type: "TOGGLE_TODO", payload: response.data });
+  };
 
   const title =
     state.todos.length > 0 ? `${state.todos.length} todos` : "No todos";
@@ -16,7 +30,7 @@ export default function TodoList() {
             key={todo.id}
           >
             <span
-              onClick={() => dispatch({ type: "TOGGLE_TODO", payload: todo })}
+              onClick={() => toggleTodo(todo)}
               className={`flex-1 ml-12 cursor-pointer ${todo.completed &&
                 "line-through text-grey-darkest"} `}
             >
@@ -29,9 +43,7 @@ export default function TodoList() {
             >
               <i className="fas fa-edit h-6 text-green-dark pt-1 mr-2" />
             </button>
-            <button
-              onClick={() => dispatch({ type: "DELETE_TODO", payload: todo })}
-            >
+            <button onClick={() => deleteTodo(todo)}>
               <i className="fas fa-trash h-6 text-red pt-1 mr-3" />
             </button>
           </li>

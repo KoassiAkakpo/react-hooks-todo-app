@@ -1,13 +1,12 @@
-import uuidv4 from "uuid/v4";
-
 export default function reducer(state, action) {
   switch (action.type) {
+    case "GET_TODOS":
+      return {
+        ...state,
+        todos: action.payload
+      };
     case "ADD_TODO":
-      if (!action.payload) return state;
-      if (state.todos.findIndex(t => t.text === action.payload) > -1)
-        return state;
-      const newTodo = { id: uuidv4(), text: action.payload, completed: false };
-      const newTodos = [...state.todos, newTodo];
+      const newTodos = [...state.todos, action.payload];
       return {
         ...state,
         todos: newTodos
@@ -18,14 +17,14 @@ export default function reducer(state, action) {
         currentTodo: action.payload
       };
     case "UPDATE_TODO":
-      if (!action.payload) return state;
-      if (state.todos.findIndex(t => t.text === action.payload) > -1) {
-        return {
-          ...state,
-          currentTodo: {}
-        };
-      }
-      const updatedTodo = { ...state.currentTodo, text: action.payload };
+      // if (!action.payload) return state;
+      // if (state.todos.findIndex(t => t.text === action.payload) > -1) {
+      //   return {
+      //     ...state,
+      //     currentTodo: {}
+      //   };
+      // }
+      const updatedTodo = { ...action.payload };
       const updatedTodoIndex = state.todos.findIndex(
         t => t.id === state.currentTodo.id
       );
@@ -39,9 +38,7 @@ export default function reducer(state, action) {
 
     case "TOGGLE_TODO":
       const toggledTodos = state.todos.map(t =>
-        t.id === action.payload.id
-          ? { ...action.payload, completed: !action.payload.completed }
-          : t
+        t.id === action.payload.id ? action.payload : t
       );
       return {
         ...state,
